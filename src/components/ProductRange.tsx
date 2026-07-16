@@ -83,12 +83,10 @@ function ProductCard({ product, index }: { product: any; index: number }) {
           } as React.CSSProperties}
         />
 
-        {/* Ribbon Badge */}
-        <div className="absolute top-6 -left-2 z-30 pointer-events-none translate-z-20">
-          <div className="relative bg-accent text-primary-900 font-bold uppercase tracking-wider text-xs px-4 py-2 shadow-lg rounded-r-md">
+        {/* Floating Badge */}
+        <div className="absolute top-6 left-6 z-30 pointer-events-none translate-z-20">
+          <div className="relative bg-accent text-primary-900 font-bold uppercase tracking-wider text-xs px-4 py-1.5 shadow-[0_10px_20px_rgba(0,0,0,0.3)] rounded-full border border-accent-dark/20">
             {product.badge}
-            {/* Ribbon fold triangle */}
-            <div className="absolute top-full left-0 w-2 h-2 bg-accent-dark [clip-path:polygon(0_0,100%_0,100%_100%)]" />
           </div>
         </div>
 

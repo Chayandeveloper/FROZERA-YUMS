@@ -5,12 +5,39 @@ import React, { useState } from "react";
 
 export default function B2BEnquiry() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simulate form submission
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    setIsSubmitting(true);
+    
+    // Using Web3Forms for backend-less email sending
+    const formData = new FormData(e.currentTarget);
+    
+    formData.append("access_key", "787509cc-a9d3-4142-aba0-997991994bf2");
+    formData.append("subject", "New B2B Enquiry from Frozera Yums Website");
+    
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        console.error("Form submission failed:", data);
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -64,36 +91,40 @@ export default function B2BEnquiry() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs text-white/50 uppercase tracking-wider ml-1">Name</label>
-                    <input required type="text" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="John Doe" />
+                    <input name="name" required type="text" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="John Doe" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs text-white/50 uppercase tracking-wider ml-1">Phone</label>
-                    <input required type="tel" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="+91 98765..." />
+                    <input name="phone" required type="tel" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="+91 98765..." />
                   </div>
                 </div>
                 
                 <div className="space-y-1">
                   <label className="text-xs text-white/50 uppercase tracking-wider ml-1">Email</label>
-                  <input required type="email" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="john@store.com" />
+                  <input name="email" required type="email" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="john@store.com" />
                 </div>
                 
                 <div className="space-y-1">
                   <label className="text-xs text-white/50 uppercase tracking-wider ml-1">Location / City</label>
-                  <input required type="text" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="Guwahati" />
+                  <input name="location" required type="text" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors" placeholder="Guwahati" />
                 </div>
 
                 <div className="space-y-1">
                   <label className="text-xs text-white/50 uppercase tracking-wider ml-1">Expected Monthly Volume</label>
-                  <select className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors appearance-none">
+                  <select name="expected_volume" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors appearance-none">
                     <option value="starter">Starter (under 100 packs)</option>
                     <option value="growth">Growth (100 - 500 packs)</option>
                     <option value="scale">Scale (500+ packs)</option>
                   </select>
                 </div>
 
-                <button type="submit" className="w-full bg-accent hover:bg-accent-dark text-primary-900 font-bold py-4 rounded-lg mt-4 transition-colors flex items-center justify-center gap-2">
-                  <span>Request Bulk Quote</span>
-                  <Send className="w-4 h-4" />
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-accent hover:bg-accent-dark text-primary-900 font-bold py-4 rounded-lg mt-4 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  <span>{isSubmitting ? "Sending Request..." : "Request Bulk Quote"}</span>
+                  <Send className={`w-4 h-4 ${isSubmitting ? "animate-pulse" : ""}`} />
                 </button>
               </form>
             )}

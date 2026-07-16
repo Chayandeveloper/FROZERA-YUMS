@@ -72,7 +72,11 @@ export default function CanvasScrollSequence() {
         const img = images[index];
         const hRatio = canvas.width / img.width;
         const vRatio = canvas.height / img.height;
-        const ratio = Math.max(hRatio, vRatio);
+        
+        // On mobile, use 'contain' logic (Math.min) so the product isn't cut off by 'cover' (Math.max)
+        const isMobileCanvas = window.innerWidth < 768;
+        const ratio = isMobileCanvas ? Math.min(hRatio, vRatio) * 1.5 : Math.max(hRatio, vRatio);
+        
         const centerShift_x = (canvas.width - img.width * ratio) / 2;
         const centerShift_y = (canvas.height - img.height * ratio) / 2;
         
@@ -127,11 +131,16 @@ export default function CanvasScrollSequence() {
       }
     }, containerRef);
 
+    let lastWidth = window.innerWidth;
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      renderFrame(Math.round(airframes.frame));
-      ScrollTrigger.refresh();
+      // Only resize and refresh if width changes to prevent mobile browser URL bar jitter
+      if (window.innerWidth !== lastWidth) {
+        lastWidth = window.innerWidth;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        renderFrame(Math.round(airframes.frame));
+        ScrollTrigger.refresh();
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -162,19 +171,19 @@ export default function CanvasScrollSequence() {
       {/* Overlays */}
       <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
         <div className="text-checkpoint-1 opacity-0 translate-y-10 absolute text-center px-4 w-full">
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-white drop-shadow-2xl">
+          <h2 className="font-display text-4xl md:text-7xl font-bold text-white drop-shadow-2xl">
             100% Pure <span className="text-accent">Veg</span>
           </h2>
         </div>
         
         <div className="text-checkpoint-2 opacity-0 translate-y-10 absolute text-center px-4 w-full">
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-white drop-shadow-2xl">
+          <h2 className="font-display text-4xl md:text-7xl font-bold text-white drop-shadow-2xl">
             No Onion, <span className="text-accent">No Garlic</span>
           </h2>
         </div>
         
         <div className="text-checkpoint-3 opacity-0 translate-y-10 absolute text-center px-4 w-full">
-          <h2 className="font-display text-5xl md:text-7xl font-bold text-white drop-shadow-2xl">
+          <h2 className="font-display text-4xl md:text-7xl font-bold text-white drop-shadow-2xl">
             Crispy Outside,<br />
             <span className="text-accent">Sweet Inside</span>
           </h2>
